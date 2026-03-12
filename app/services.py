@@ -9,41 +9,55 @@ def get_price(symbol):
 
     pair = symbol.upper()
 
-    r = requests.get(f"{BASE_URL}/ticker/price?symbol={pair}")
+    try:
+        r = requests.get(f"{BASE_URL}/ticker/price?symbol={pair}", timeout=10)
+        data = r.json()
 
-    data = r.json()
+        if "price" in data:
+            return float(data["price"])
+        else:
+            return 0
 
-    return float(data["price"])
+    except:
+        return 0
 
 
 def analyze(symbol):
 
     pair = symbol.upper()
 
-    r = requests.get(
-        f"{BASE_URL}/klines?symbol={pair}&interval=1m&limit=100"
-    )
+    try:
+        r = requests.get(
+            f"{BASE_URL}/klines?symbol={pair}&interval=1m&limit=100",
+            timeout=10
+        )
 
-    data = r.json()
+        data = r.json()
 
-    closes = [float(x[4]) for x in data]
+        closes = [float(x[4]) for x in data]
 
-    df = pd.DataFrame(closes, columns=["close"])
+        if len(closes) < 20:
+            return 0, "NEUTRAL"
 
-    rsi_indicator = ta.momentum.RSIIndicator(df["close"])
+        df = pd.DataFrame(closes, columns=["close"])
 
-    df["rsi"] = rsi_indicator.rsi()
+        rsi_indicator = ta.momentum.RSIIndicator(df["close"])
 
-    rsi = df["rsi"].iloc[-1]
+        df["rsi"] = rsi_indicator.rsi()
 
-    if rsi < 30:
-        signal = "BUY"
-    elif rsi > 70:
-        signal = "SELL"
-    else:
-        signal = "NEUTRAL"
+        rsi = float(df["rsi"].iloc[-1])
 
-    return round(rsi, 2), signal
+        if rsi < 30:
+            signal = "BUY"
+        elif rsi > 70:
+            signal = "SELL"
+        else:
+            signal = "NEUTRAL"
+
+        return round(rsi, 2), signal
+
+    except:
+        return 0, "NEUTRAL"
 
 
 def scan_market():
@@ -60,14 +74,28 @@ def scan_market():
 
     for coin in coins:
 
-        r = requests.get(f"{BASE_URL}/ticker/24hr?symbol={coin}")
+        try:
+            r = requests.get(
+                f"{BASE_URL}/ticker/24hr?symbol={coin}",
+                timeout=10
+            )
 
-        data = r.json()
+            data = r.json()
 
-        results.append({
-            "symbol": coin,
-            "price": round(float(data["lastPrice"]), 2),
-            "change": round(float(data["priceChangePercent"]), 2)
-        })
+            price = float(data.get("lastPrice", 0))
+            change = float(data.get("priceChangePercent", 0))
+
+            results.append({
+                "symbol": coin,
+                "price": round(price, 2),
+                "change": round(change, 2)
+            })
+
+        except:
+            results.append({
+                "symbol": coin,
+                "price": 0,
+                "change": 0
+            })
 
     return results
