@@ -2,14 +2,14 @@ import requests
 import pandas as pd
 import ta
 
-BASE = "https://api.binance.com/api/v3"
+BASE_URL = "https://api.binance.com/api/v3"
 
 
 def get_price(symbol):
 
-    pair = symbol.replace("/", "")
+    pair = symbol.upper()
 
-    r = requests.get(f"{BASE}/ticker/price?symbol={pair}")
+    r = requests.get(f"{BASE_URL}/ticker/price?symbol={pair}")
 
     data = r.json()
 
@@ -18,10 +18,10 @@ def get_price(symbol):
 
 def analyze(symbol):
 
-    pair = symbol.replace("/", "")
+    pair = symbol.upper()
 
     r = requests.get(
-        f"{BASE}/klines?symbol={pair}&interval=1m&limit=100"
+        f"{BASE_URL}/klines?symbol={pair}&interval=1m&limit=100"
     )
 
     data = r.json()
@@ -43,7 +43,7 @@ def analyze(symbol):
     else:
         signal = "NEUTRAL"
 
-    return round(rsi,2), signal
+    return round(rsi, 2), signal
 
 
 def scan_market():
@@ -60,16 +60,14 @@ def scan_market():
 
     for coin in coins:
 
-        r = requests.get(
-            f"{BASE}/ticker/24hr?symbol={coin}"
-        )
+        r = requests.get(f"{BASE_URL}/ticker/24hr?symbol={coin}")
 
         data = r.json()
 
         results.append({
             "symbol": coin,
-            "price": round(float(data["lastPrice"]),2),
-            "change": round(float(data["priceChangePercent"]),2)
+            "price": round(float(data["lastPrice"]), 2),
+            "change": round(float(data["priceChangePercent"]), 2)
         })
 
     return results
