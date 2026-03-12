@@ -16,7 +16,11 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+
+    return templates.TemplateResponse(
+        "login.html",
+        {"request": request}
+    )
 
 
 @app.post("/login", response_class=HTMLResponse)
@@ -35,7 +39,10 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
 
     return templates.TemplateResponse(
         "login.html",
-        {"request": request, "error": "Invalid login"}
+        {
+            "request": request,
+            "error": "Invalid login"
+        }
     )
 
 
@@ -48,23 +55,55 @@ def analyze_market(
     size: float = Form(1)
 ):
 
-    price = get_price(symbol)
+    # PRICE
+    try:
+        price = get_price(symbol)
+    except:
+        price = 0
 
-    rsi, trend = analyze(symbol)
+    # MARKET ANALYSIS
+    try:
+        rsi, trend = analyze(symbol)
+    except:
+        rsi = 0
+        trend = "NEUTRAL"
 
-    prediction = ai_predict(symbol)
+    # AI PREDICTION
+    try:
+        prediction = ai_predict(symbol)
+    except:
+        prediction = "UNKNOWN"
 
-    strength = signal_strength(rsi)
+    # SIGNAL STRENGTH
+    try:
+        strength = signal_strength(rsi)
+    except:
+        strength = "WEAK"
 
+    # RISK CALCULATION
     risk = round(capital * 0.02, 2)
 
-    assistant = ai_assistant(symbol, trend, prediction)
+    # AI ASSISTANT
+    try:
+        assistant = ai_assistant(symbol, trend, prediction)
+    except:
+        assistant = "AI assistant unavailable"
 
-    pnl, percent = calculate_pnl(entry, price, size)
+    # PNL
+    try:
+        pnl, percent = calculate_pnl(entry, price, size)
+    except:
+        pnl = 0
+        percent = 0
 
-    bot = run_bot(symbol)
+    # BOT
+    try:
+        bot = run_bot(symbol)
+    except:
+        bot = "Bot inactive"
 
-    tv_symbol = "BINANCE:" + symbol.replace("/", "")
+    # TRADINGVIEW SYMBOL
+    tv_symbol = "BINANCE:" + symbol.replace("/", "").upper()
 
     return templates.TemplateResponse(
         "dashboard.html",
