@@ -1,9 +1,9 @@
 fastapi
 uvicorn
+jinja2
+python-multipart
+requests
 pandas
 numpy
 ta
-jinja2
-python-multipart
 scikit-learn
-requests
