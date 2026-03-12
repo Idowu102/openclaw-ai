@@ -1,9 +1,9 @@
 fastapi
 uvicorn
-jinja2
-sqlalchemy
-ccxt
 pandas
+numpy
 ta
-scikit-learn
+jinja2
 python-multipart
+scikit-learn
+requests
