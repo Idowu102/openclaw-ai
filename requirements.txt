@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+jinja2
+sqlalchemy
+ccxt
+pandas
+ta
+python-multipart

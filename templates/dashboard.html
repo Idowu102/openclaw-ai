@@ -1,0 +1,152 @@
+<html>
+
+<head>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<style>
+
+body{
+background:#020617;
+color:white;
+font-family:Arial;
+text-align:center;
+}
+
+.card{
+background:#0f172a;
+padding:20px;
+margin:20px;
+border-radius:10px;
+}
+
+.green{color:#22c55e}
+.red{color:#ef4444}
+
+button{
+padding:10px;
+background:#22c55e;
+border:none;
+color:white;
+border-radius:5px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>🚀 OpenClaw AI GOD MODE TERMINAL</h1>
+
+<form method="post" action="/analyze">
+
+<input name="symbol" placeholder="BTC/USDT">
+
+<input name="capital" placeholder="Capital">
+
+<input name="entry" placeholder="Entry">
+
+<input name="size" placeholder="Size">
+
+<button>Analyze</button>
+
+</form>
+
+{% if symbol %}
+
+<div class="card">
+
+<h2>{{symbol}}</h2>
+
+<p>Price: ${{price}}</p>
+
+<p>RSI: {{rsi}}</p>
+
+<p>Signal: {{trend}}</p>
+
+<p>Strength: {{strength}}</p>
+
+<p>AI Prediction: ${{prediction}}</p>
+
+<p>Risk: ${{risk}}</p>
+
+<p>{{assistant}}</p>
+
+<p>{{bot}}</p>
+
+<p>PnL: ${{pnl}} ({{percent}}%)</p>
+
+</div>
+
+<div class="card">
+
+<div id="chart"></div>
+
+<script>
+
+new TradingView.widget({
+"width":850,
+"height":500,
+"symbol":"{{tv_symbol}}",
+"interval":"1",
+"theme":"dark",
+"container_id":"chart"
+});
+
+</script>
+
+</div>
+
+{% endif %}
+
+<div class="card">
+
+<h2>🔥 Market Scanner</h2>
+
+{% for coin in scanner %}
+
+<p>
+
+{{coin.symbol}}
+
+{% if coin.change > 0 %}
+
+<span class="green">+{{coin.change}}%</span>
+
+{% else %}
+
+<span class="red">{{coin.change}}%</span>
+
+{% endif %}
+
+</p>
+
+{% endfor %}
+
+</div>
+
+<div class="card">
+
+<h2>💼 Portfolio</h2>
+
+<p>USDT: {{portfolio.USDT}}</p>
+<p>BTC: {{portfolio.BTC}}</p>
+<p>ETH: {{portfolio.ETH}}</p>
+<p>SOL: {{portfolio.SOL}}</p>
+
+</div>
+
+<script>
+
+setTimeout(function(){
+
+location.reload()
+
+},60000)
+
+</script>
+
+</body>
+
+</html>
